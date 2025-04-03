@@ -1,0 +1,151 @@
+/* General styles */
+body {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    -moz-transform: perspective(1000px);
+    transform: perspective(1000px);
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    background-color: blue;
+}
+
+h1 {
+    text-align: center;
+    margin: 20px 0;
+}
+
+.graph-container {
+    width: 90%;
+    max-width: 600px;
+    margin: 20px auto;
+    position: absolute;
+    right: 10px;
+    top: 100px;
+}
+
+canvas {
+    width: 100% !important;
+    height: auto !important;
+}
+
+#home-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: transparent;
+}
+
+#showTemp {
+    top: 80px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    display: block;
+}
+
+#showHum {
+    top: 140px;
+    border-radius: 5px;
+    cursor: pointer;
+    position: absolute;
+    right: 10px;
+    display: block;
+}
+
+button img {
+    width: 50px;
+    height: auto;
+}
+
+/* Hide graphs by default */
+#tempGraph,
+#humGraph {
+    display: none;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .graph-container {
+        width: 100%;
+    }
+
+    button img {
+        width: 40px;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.2rem;
+    }
+
+    button img {
+        width: 30px;
+    }
+}
+
+
+.title {
+    font-size: 2.5rem;
+    font-family: "Lobster", cursive;
+}
+
+@keyframes scroll {
+    100% {
+        background-position: 0px -400%;
+    }
+}
+
+@media (min-width: 670px) {
+    .title {
+        font-size: 5rem;
+    }
+}
+
+#design-container {
+    outline: 1px solid transparent;
+    position: absolute;
+    top: 15%;
+    height: 500px;
+    width: 400px;
+    -webkit-transform-style: preserve-3d;
+    -moz-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+    background: url('background/background.jpg') no-repeat;
+    transform: none;
+    -moz-transform: translateZ(0px);
+    -webkit-transform: translateZ(0px);
+}
+.tree {
+    outline: 1px solid transparent;
+    width: 300px;
+    height: 300px;
+    background: url('background/tree.png') no-repeat;
+    position: absolute;
+    transform: translateZ(120px);
+    -moz-transform: translateZ(120px);
+    -webkit-transform: translateZ(120px);
+    bottom: 27px;
+    left: 50%;
+    margin-left: -117px;
+}
+
+.card.p-4.shadow {
+    position: absolute;
+    right: 20px;
+}
