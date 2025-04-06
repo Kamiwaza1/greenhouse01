@@ -7,47 +7,301 @@
     <title>Greenhouse Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
 </head>
 
-<body>
-
-    <button id="logout" class="btn btn-danger">Logout</button>
-
-
-
-    <div id="tempGraph" class="graph-container">
-        <canvas id="temperatureChart"></canvas>
-    </div>
-    <div id="humGraph" class="graph-container">
-        <canvas id="humidityChart"></canvas>
-    </div>
-
-    <div class="position-fixed top-0 end-0 p-3 d-flex flex-column">
-        <button id="showTemp" class="btn btn-secondary mb-2">
-            <img src="/icon/forecast_15482051.png" alt="Temperature Icon">
-        </button>
-        <button id="showHum" class="btn btn-secondary mb-2">
-            <img src="/icon/humidity_8923419.png" alt="Humidity Icon">
-        </button>
-        <button id="home-page" class="btn btn-secondary">
-            <img src="/icon/square.png" alt="Home Page">
-        </button>
+<body class="overflow-hidden">
+    <!-- Sliding Menu -->
+    <div id="sideMenu" class="position-fixed top-0 start-0 vh-100 bg-dark text-white"
+        style="width: 250px; transform: translateX(-100%); transition: transform 0.3s ease; overflow-y: auto; z-index: 1050;">
+        <div class="p-3">
+            <h4 class="mb-4">Menu</h4>
+            <button id="menuShowTemp" class="btn btn-secondary w-100 mb-3">Temperature</button>
+            <button id="menuShowHum" class="btn btn-secondary w-100 mb-3">Humidity</button>
+            <button id="menuHomePage" class="btn btn-secondary w-100 mb-3">Home</button>
+            <button id="themeToggle" class="btn btn-secondary w-100 mb-3">System Theme</button>
+        </div>
+        <div class="position-absolute bottom-0 start-0 w-100 p-3">
+            <button id="logout" class="btn btn-danger w-100">Logout</button>
+        </div>
     </div>
 
+    <!-- Sensor Status Bar -->
+    <div id="sensorStatusBar" class="text-center py-2 text-white" style="background-color: #28a745;">
+        Sensor Status: <span id="sensorStatus">Online</span>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="z-index: 1000;">
+        <div class="container-fluid">
+            <a id="menuToggle" class="navbar-brand" href="#" style="cursor: pointer;">Greenhouse</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item position-relative">
+                        <button id="notificationButton" class="btn btn-warning">Notifications</button>
+                        <div id="notificationBox" class="notification-box position-absolute bg-light shadow p-3"
+                            style="display: none;">
+                            <p class="mb-0 text-muted">No notifications yet.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Latest Data Boxes -->
+            <div class="col-md-12 mb-4">
+                <div id="latestTemp" class="data-box text-center p-4 shadow">
+                    <h5>Temperature</h5>
+                    <p class="display-4" id="latestTempValue">-- °C</p>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div id="latestHum" class="data-box text-center p-4 shadow">
+                    <h5>Humidity</h5>
+                    <p class="display-4" id="latestHumValue">-- %</p>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <!-- Graphs -->
+            <div class="col-12">
+                <div id="tempGraph" class="graph-container" style="display: none;">
+                    <h5 class="text-center">Temperature Data</h5>
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+                <div id="humGraph" class="graph-container" style="display: none;">
+                    <h5 class="text-center">Humidity Data</h5>
+                    <canvas id="humidityChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
-        if (!localStorage.getItem("authenticated")) {
-            window.location.href = "index.html";
-        }
+        // Toggle side menu and hide/show "Greenhouse" text
+        const menuToggle = document.getElementById("menuToggle");
+        const sideMenu = document.getElementById("sideMenu");
 
+        menuToggle.addEventListener("click", () => {
+            const isMenuOpen = sideMenu.style.transform === "translateX(0%)";
+            sideMenu.style.transform = isMenuOpen ? "translateX(-100%)" : "translateX(0%)";
+            menuToggle.style.visibility = isMenuOpen ? "visible" : "hidden"; // Hide "Greenhouse" text when menu is open
+        });
+
+        // Logout functionality
         document.getElementById("logout").addEventListener("click", function () {
-            localStorage.removeItem("authenticated");
             window.location.href = "index.html";
         });
+
+        // Show temperature graph
+        document.getElementById("menuShowTemp").addEventListener("click", function () {
+            sideMenu.style.transform = "translateX(-100%)";
+            menuToggle.style.visibility = "visible"; // Show "Greenhouse" text when menu is closed
+            document.getElementById("tempGraph").style.display = "block";
+            document.getElementById("humGraph").style.display = "none";
+            document.getElementById("latestTemp").style.display = "none"; // Hide latest temperature box
+            document.getElementById("latestHum").style.display = "none"; // Hide latest humidity box
+        });
+
+        // Show humidity graph
+        document.getElementById("menuShowHum").addEventListener("click", function () {
+            sideMenu.style.transform = "translateX(-100%)";
+            menuToggle.style.visibility = "visible"; // Show "Greenhouse" text when menu is closed
+            document.getElementById("tempGraph").style.display = "none";
+            document.getElementById("humGraph").style.display = "block";
+            document.getElementById("latestTemp").style.display = "none"; // Hide latest temperature box
+            document.getElementById("latestHum").style.display = "none"; // Hide latest humidity box
+        });
+
+        // Hide both graphs (home page)
+        document.getElementById("menuHomePage").addEventListener("click", function () {
+            sideMenu.style.transform = "translateX(-100%)";
+            menuToggle.style.visibility = "visible"; // Show "Greenhouse" text when menu is closed
+            document.getElementById("tempGraph").style.display = "none";
+            document.getElementById("humGraph").style.display = "none";
+            document.getElementById("latestTemp").style.display = "block"; // Show latest temperature box
+            document.getElementById("latestHum").style.display = "block"; // Show latest humidity box
+        });
+
+        // System theme toggle
+        document.getElementById("themeToggle").addEventListener("click", () => {
+            document.body.classList.toggle("dark-mode");
+            document.body.classList.toggle("light-mode");
+        });
+
+        // Notification button functionality
+        const notificationButton = document.getElementById("notificationButton");
+        const notificationBox = document.getElementById("notificationBox");
+
+        notificationButton.addEventListener("click", () => {
+            const isBoxVisible = notificationBox.style.display === "block";
+            notificationBox.style.display = isBoxVisible ? "none" : "block"; // Toggle visibility
+        });
+
+        // Function to add notifications to the box
+        function addNotification(message) {
+            const notificationBox = document.getElementById("notificationBox");
+            const notificationMessage = document.createElement("p");
+            notificationMessage.textContent = message;
+            notificationMessage.className = "mb-0";
+
+            // Limit to 5 notifications
+            if (notificationBox.children.length >= 5) {
+                notificationBox.removeChild(notificationBox.firstChild);
+            }
+
+            notificationBox.appendChild(notificationMessage);
+        }
+
+        // Example: Add a notification when temperature exceeds the limit
+        function checkLimitsAndNotify(latestEntry) {
+            const temperatureLimit = 15; // Example limit for temperature
+            const humidityLimit = 50; // Example limit for humidity
+
+            if (latestEntry.temperature > temperatureLimit) {
+                addNotification(`Temperature is too high: ${latestEntry.temperature} °C`);
+            }
+
+            if (latestEntry.humidity > humidityLimit) {
+                addNotification(`Humidity is too high: ${latestEntry.humidity} %`);
+            }
+        }
+
+        // Function to update the graphs
+        function updateGraphs(latestGraphData) {
+            const { timestamps, temperatures, humidities } = latestGraphData;
+
+            // Update temperature chart
+            const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+            window.temperatureChart = new Chart(tempCtx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: temperatures,
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        fill: false,
+                        borderWidth: 3,
+                        tension: 0.4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { beginAtZero: false }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' }
+                    }
+                }
+            });
+
+            // Update humidity chart
+            const humCtx = document.getElementById('humidityChart').getContext('2d');
+            window.humidityChart = new Chart(humCtx, {
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: 'Humidity (%)',
+                        data: humidities,
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        fill: false,
+                        borderWidth: 3,
+                        tension: 0.4,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { title: { display: true, text: 'Time' } },
+                        y: { beginAtZero: false }
+                    },
+                    plugins: {
+                        legend: { display: true, position: 'top' }
+                    }
+                }
+            });
+        }
+
+        // Fetch and display the latest data
+        let latestGraphData = { timestamps: [], temperatures: [], humidities: [] };
+        let lastDataFetchTime = null; // Track the last time data was fetched
+
+        function fetchLatestData() {
+            fetch('https://greenhouse-project.atwebpages.com/get_data.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                        updateStatus(false); // Mark as offline if there's an error
+                        return;
+                    }
+
+                    // Get the latest 10 entries
+                    const latestEntries = data.slice(-10);
+                    const timestamps = latestEntries.map(entry => entry.timestamp);
+                    const temperatures = latestEntries.map(entry => entry.temperature);
+                    const humidities = latestEntries.map(entry => entry.humidity);
+
+                    // Update graph data only if new data is fetched
+                    if (JSON.stringify(latestGraphData.timestamps) !== JSON.stringify(timestamps)) {
+                        latestGraphData = { timestamps, temperatures, humidities };
+                        updateGraphs(latestGraphData);
+                    }
+
+                    // Get the latest entry for notifications and latest data boxes
+                    const latestEntry = latestEntries[latestEntries.length - 1];
+                    document.getElementById('latestTempValue').textContent = `${latestEntry.temperature} °C`;
+                    document.getElementById('latestHumValue').textContent = `${latestEntry.humidity} %`;
+
+                    // Check limits and trigger notifications
+                    checkLimitsAndNotify(latestEntry);
+
+                    // Update the last data fetch time and set status to online
+                    lastDataFetchTime = new Date().getTime();
+                    updateStatus(true);
+                })
+                .catch(error => {
+                    console.error('Error fetching latest data:', error);
+                    updateStatus(false); // Mark as offline if fetch fails
+                });
+        }
+
+        function updateStatus(isOnline) {
+            const statusBar = document.getElementById('sensorStatusBar');
+            const statusText = document.getElementById('sensorStatus');
+
+            if (isOnline) {
+                statusBar.style.backgroundColor = '#28a745'; // Green
+                statusText.textContent = 'Online';
+            } else {
+                statusBar.style.backgroundColor = '#dc3545'; // Red
+                statusText.textContent = 'Offline';
+            }
+        }
+
+        // Check if data is received every minute
+        setInterval(() => {
+            const currentTime = new Date().getTime();
+            if (lastDataFetchTime && currentTime - lastDataFetchTime > 60000) {
+                updateStatus(false); // Mark as offline if no data is received in the last minute
+            }
+        }, 60000);
+
+        setInterval(fetchLatestData, 1000); // Fetch data every second
+        fetchLatestData(); // Initial fetch
     </script>
 
     <script src="script.js"></script>

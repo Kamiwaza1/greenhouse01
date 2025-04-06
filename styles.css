@@ -6,13 +6,18 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    background-color: #28a745; /* Green background for dashboard */
+    font-family: Arial, sans-serif;
     -moz-transform: perspective(1000px);
     transform: perspective(1000px);
     -moz-transform-style: preserve-3d;
     transform-style: preserve-3d;
     perspective: 1000px;
-    -webkit-perspective: 1000px;
-    background-color: blue;
+}
+
+body.light-mode {
+    background-color: #ffffff;
+    color: #000000;
 }
 
 h1 {
@@ -21,12 +26,17 @@ h1 {
 }
 
 .graph-container {
-    width: 90%;
+    width: 100%;
     max-width: 600px;
-    margin: 20px auto;
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     position: absolute;
-    right: 10px;
-    top: 100px;
+    top: 50%; /* Center vertically */
+    left: 50%; /* Center horizontally */
+    transform: translate(-50%, -50%); /* Adjust for centering */
 }
 
 canvas {
@@ -34,24 +44,56 @@ canvas {
     height: auto !important;
 }
 
+/* Button styles */
+button {
+    font-size: 0.9rem; /* Smaller font size */
+    padding: 8px 12px; /* Adjust padding */
+    border-radius: 4px; /* Rounded corners */
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+button:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
+    background-color: #007bff; /* Highlight color */
+    color: white;
+}
+
+button img {
+    width: 30px; /* Smaller icon size */
+    height: auto;
+}
+
+/* Icon button adjustments */
 #home-page {
     display: flex;
+    flex-direction: column;
+    align-items: center;
     justify-content: center;
-    align-items: flex-end;
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    background-color: transparent;
+    background-color: #e9ecef; /* Light gray background */
+    border: 1px solid #ced4da; /* Border for better visibility */
+    width: 80px; /* Smaller button width */
+    height: 80px; /* Smaller button height */
 }
 
 #showTemp {
     top: 80px;
     border-radius: 5px;
-    cursor: pointer;
+    cursor: pointer;    
     position: absolute;
     right: 10px;
     display: block;
+    width: 80px; /* Smaller button width */
+    height: 80px; /* Smaller button height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef; /* Light gray background */
+    border: 1px solid #ced4da; /* Border for better visibility */
 }
 
 #showHum {
@@ -61,17 +103,28 @@ canvas {
     position: absolute;
     right: 10px;
     display: block;
-}
-
-button img {
-    width: 50px;
-    height: auto;
+    width: 80px; /* Smaller button width */
+    height: 80px; /* Smaller button height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #e9ecef; /* Light gray background */
+    border: 1px solid #ced4da; /* Border for better visibility */
 }
 
 /* Hide graphs by default */
 #tempGraph,
 #humGraph {
     display: none;
+}
+
+/* Footer styling */
+footer {
+    background-color: #343a40;
+    color: white;
+    padding: 10px 0;
+    font-size: 0.9rem;
 }
 
 /* Responsive design */
@@ -85,7 +138,14 @@ button img {
     }
 
     button img {
-        width: 40px;
+        width: 25px;
+    }
+
+    #showTemp,
+    #showHum,
+    #home-page {
+        width: 60px;
+        height: 60px;
     }
 }
 
@@ -95,10 +155,16 @@ button img {
     }
 
     button img {
-        width: 30px;
+        width: 20px;
+    }
+
+    #showTemp,
+    #showHum,
+    #home-page {
+        width: 50px;
+        height: 50px;
     }
 }
-
 
 .title {
     font-size: 2.5rem;
@@ -131,6 +197,7 @@ button img {
     -moz-transform: translateZ(0px);
     -webkit-transform: translateZ(0px);
 }
+
 .tree {
     outline: 1px solid transparent;
     width: 300px;
@@ -148,4 +215,37 @@ button img {
 .card.p-4.shadow {
     position: absolute;
     right: 20px;
+}
+
+body.dark-mode {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.data-box {
+    background-color: #f8f9fa; /* Light gray background */
+    border-radius: 8px;
+    border: 1px solid #ced4da; /* Light border */
+    color: #212529; /* Dark text */
+}
+
+.data-box h5 {
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+}
+
+.data-box p {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.notification-box {
+    width: 300px;
+    top: 100%; /* Position below the button */
+    right: 0;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    z-index: 1050;
+    display: none; /* Hidden by default */
 }
