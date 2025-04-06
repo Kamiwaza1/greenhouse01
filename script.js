@@ -213,58 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })
         .catch(error => console.error('Error fetching initial data:', error));
-
-    // Remove duplicate redirection logic
-    if (!sessionStorage.getItem('loggedIn')) {
-        window.location.href = "index.html";
-    }
-
-    // Remove duplicate login success redirection
-    $(document).ready(function () {
-        $("#loginForm").submit(function (e) {
-            e.preventDefault(); // Prevent page reload
-
-            var username = $("#username").val();
-            var password = $("#password").val();
-
-            $.ajax({
-                type: "POST",
-                url: "https://greenhouse-project.atwebpages.com/login.php",
-                data: { username: username, password: password },
-                dataType: "json",
-                success: function (response) {
-                    console.log("Server Response:", response);
-            
-                    if (response.success) {
-                        sessionStorage.setItem("loggedIn", "true");
-            
-                        if (response.redirect) {
-                           window.location.href = response.redirect; // Redirect to dashboard.html
-                        }
-                    } else {
-                        $("#loginMessage").text(response.error).css("color", "red");
-                    }
-                },
-                error: function (xhr, status, error) {
-                    console.error("AJAX Error:", status, error);
-                    $("#loginMessage").text("Login failed. Try again!").css("color", "red");
-                }
-            });
-            
-            
-        });
-    });
 });
 
-$(document).ready(function() {
-    var request = null;
-    var mouse = { x: 0, y: 0 };
-    var cx = window.innerWidth / 2;
-    var cy = window.innerHeight / 2;
-
-    $('body').mousemove(function(event) {
-        mouse.x = event.pageX;
-        mouse.y = event.pageY;
 
         cancelAnimationFrame(request);
         request = requestAnimationFrame(update);
@@ -284,14 +234,3 @@ $(document).ready(function() {
             ease: Power2.easeOut
         });
     }
-
-    $(window).resize(function() {
-        cx = window.innerWidth / 2;
-        cy = window.innerHeight / 2;
-    });
-});
- // Logout Functionality
- document.getElementById('logout').addEventListener('click', function() {
-    sessionStorage.removeItem('loggedIn');
-    window.location.href = "index.html";
-});
