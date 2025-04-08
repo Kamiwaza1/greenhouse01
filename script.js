@@ -148,3 +148,4 @@ function showNotification(message, type) {
     document.body.appendChild(notification);
     setTimeout(() => notification.remove(), 3000);
 }
+

@@ -11,19 +11,115 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        body {
+            overflow: hidden;
+            background-color: darkgray;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transform: perspective(1000px);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        #container {
+            outline: 1px solid transparent;
+            position: absolute;
+            left: 5%; /* Move to the left */
+            top: 50%;
+            margin-top: -250px; /* Adjust for larger height */
+            height: 500px; /* Larger height */
+            width: 600px; /* Wider width */
+            -webkit-transform-style: preserve-3d;
+            -moz-transform-style: preserve-3d;
+            transform-style: preserve-3d;
+            background: url('/background/background.jpg') no-repeat;
+            background-size: cover;
+            transform: translateZ(0px);
+            -moz-transform: translateZ(0px);
+            -webkit-transform: translateZ(0px);
+        }
+
+        .figure {
+            outline: 1px solid transparent;
+            width: 480px; /* 80% of the container width */
+            height: 400px; /* 80% of the container height */
+            background: url('/background/tree.png') no-repeat;
+            background-size: contain;
+            position: absolute;
+            transform: translateZ(150px); /* Adjusted depth */
+            -moz-transform: translateZ(150px);
+            -webkit-transform: translateZ(150px);
+            bottom: 0; /* Align to the bottom of the container */
+            left: 50%;
+            margin-left: -240px; /* Center the tree horizontally */
+        }
+
+        .card {
+            position: absolute;
+            right: 5%; /* Move to the right */
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+        }
+    </style>
 </head>
 
-<body class="d-flex justify-content-center align-items-center vh-100 overflow-hidden">
+<body class="overflow-hidden index-page">
     <div class="card p-4 shadow text-center" style="width: 350px;">
-        <h3 class="mb-4">Greenhouse</h3>
+        <h3 class="mb-4">Welcome back!</h3>
         <!-- Redirect Button -->
-        <button id="redirectToDashboard" class="btn btn-primary w-100">Login</button>
+        <button id="redirectToDashboard" class="btn btn-primary w-100" style="background-color: green; border-color: green;">Login</button>
+    </div>
+
+    <div id="container">
+        <div class="figure"></div>
     </div>
 
     <script>
         document.getElementById("redirectToDashboard").addEventListener("click", function () {
             localStorage.setItem("authenticated", "true"); // Set authentication flag
             window.location.href = "dashboard.html";
+        });
+
+        $(document).ready(function () {
+            var request = null;
+            var mouse = { x: 0, y: 0 };
+            var cx = 300; // Center of the wider container
+            var cy = window.innerHeight / 2;
+
+            $('body').mousemove(function (event) {
+                mouse.x = event.pageX;
+                mouse.y = event.pageY;
+
+                cancelAnimationFrame(request);
+                request = requestAnimationFrame(update);
+            });
+
+            function update() {
+                var dx = mouse.x - cx;
+                var dy = mouse.y - cy;
+
+                var tiltx = -(dy / cy); // Reverse the direction for X-axis
+                var tilty = dx / cx;   // Reverse the direction for Y-axis
+                var radius = Math.sqrt(Math.pow(tiltx, 2) + Math.pow(tilty, 2));
+                var degree = Math.min(radius * 10, 45); // Limit rotation to 45 degrees
+
+                gsap.to("#container", {
+                    duration: 1,
+                    rotationX: tiltx * degree,
+                    rotationY: tilty * degree,
+                    ease: "power2.out"
+                });
+            }
+
+            $(window).resize(function () {
+                cx = 300; // Recalculate center of the wider container
+                cy = window.innerHeight / 2;
+            });
         });
     </script>
 </body>
